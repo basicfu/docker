@@ -4,6 +4,7 @@ RUN apk update \
 	&& apk add curl \
   && apk add nodejs \
   && apk add yarn \
+  && yarn config set registry https://registry.npm.taobao.org \
   && apk add npm \
   && npm install -g npm \
   && npm install -g cnpm --registry=https://registry.npm.taobao.org
