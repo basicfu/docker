@@ -1,14 +1,8 @@
 #!/bin/bash
-
 set -e
-
-if [ "$1" = 'php' ] && [ "$(id -u)" = '0' ]; then
-    chown -R www-data /var/www/html
-    chmod -R 777 /var/www/html/
+if [ -d '/var/www/html/data' ]; then
+	rm -rf /tmp/file/data
 fi
-
-if [ ! -e '/var/www/html/index.php' ]; then
-    cp -a /tmp/file/* /var/www/html/
-fi
-
+  cp -a /tmp/file/* /var/www/html/
+  chmod -R 777 /var/www/html/
 exec "$@"
