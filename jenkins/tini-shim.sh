@@ -8,7 +8,6 @@ cat <<EOF
 Please update your scripts to use /sbin/tini or simply tini going forward.
 Previous path has been preserved for backwards compatibility,
 but WILL BE REMOVED in the future. (around Jenkins >= 2.107.2+)
-
 Now sleeping 2 minutes...
 EOF
 

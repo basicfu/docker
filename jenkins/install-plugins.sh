@@ -69,6 +69,14 @@ doDownload() {
     elif [[ "$version" == "experimental" && -n "$JENKINS_UC_EXPERIMENTAL" ]]; then
         # Download from the experimental update center
         url="$JENKINS_UC_EXPERIMENTAL/latest/${plugin}.hpi"
+    elif [[ "$version" == incrementals* ]] ; then
+        # Download from Incrementals repo: https://jenkins.io/blog/2018/05/15/incremental-deployment/
+        # Example URL: https://repo.jenkins-ci.org/incrementals/org/jenkins-ci/plugins/workflow/workflow-support/2.19-rc289.d09828a05a74/workflow-support-2.19-rc289.d09828a05a74.hpi
+        local groupId incrementalsVersion
+        arrIN=("${version//;/ }")
+        groupId=${arrIN[1]}
+        incrementalsVersion=${arrIN[2]}
+        url="${JENKINS_INCREMENTALS_REPO_MIRROR}/$(echo "${groupId}" | tr '.' '/')/${plugin}/${incrementalsVersion}/${plugin}-${incrementalsVersion}.hpi"
     else
         JENKINS_UC_DOWNLOAD=${JENKINS_UC_DOWNLOAD:-"$JENKINS_UC/download"}
         url="$JENKINS_UC_DOWNLOAD/plugins/$plugin/$version/${plugin}.hpi"
@@ -172,7 +180,7 @@ jenkinsMajorMinorVersion() {
     JENKINS_WAR=/usr/share/jenkins/jenkins.war
     if [[ -f "$JENKINS_WAR" ]]; then
         local version major minor
-        version="$(java -jar /usr/share/jenkins/jenkins.war --version)"
+        version="$(java -jar $JENKINS_WAR --version)"
         major="$(echo "$version" | cut -d '.' -f 1)"
         minor="$(echo "$version" | cut -d '.' -f 2)"
         echo "$major.$minor"
@@ -187,6 +195,7 @@ main() {
     local plugins=()
 
     mkdir -p "$REF_DIR" || exit 1
+    rm -f "$FAILED"
 
     # Read plugins from stdin or from the command line arguments
     if [[ ($# -eq 0) ]]; then
